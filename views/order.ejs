@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Form</title>
+    <link rel="stylesheet" href="stylesheets\styles.css" />
+  </head>
+  <body>
+    <!-- Header Section -->
+    <header>
+      <h1>Order Your Prints and Binding Services</h1>
+    </header>
+
+    <!-- Order Form Section -->
+    <section class="order-form">
+      <form id="orderForm" action="/createorder" method="post">
+        <!-- Name -->
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" name="name" id="name" required />
+        </div>
+
+        <!-- Contact -->
+        <div class="form-group">
+          <label for="contact">Contact Number:</label>
+          <input
+            type="text"
+            name="contact"
+            id="contact"
+            required
+            pattern="[0-9]{10}"
+            title="Please enter a valid 10-digit phone number."
+          />
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" name="email" id="email" required />
+        </div>
+
+        <!-- Timeslot -->
+        <div class="form-group">
+          <label for="orderTime">Preferred Time Slot:</label>
+          <input type="time" name="orderTime" id="orderTime" required />
+        </div>
+
+        <!-- Service Selection -->
+        <div class="form-group">
+          <label for="service">Select Service:</label>
+          <select name="service" id="service" required>
+            <option value="color_printing">Color Printing</option>
+            <option value="bw_printing">Black and White Printing</option>
+            <option value="binding">Binding Services</option>
+          </select>
+        </div>
+
+        <!-- Number of Copies -->
+        <div class="form-group">
+          <label for="copies">Number of Copies:</label>
+          <input type="number" name="copies" id="copies" required min="1" />
+        </div>
+
+        <!-- Paper Size -->
+        <div class="form-group">
+          <label for="paper_size">Paper Size:</label>
+          <select name="paper_size" id="paper_size">
+            <option value="A4">A4</option>
+            <option value="A3">A3</option>
+            <option value="Letter">Letter</option>
+          </select>
+        </div>
+
+        <!-- Binding Option -->
+        <div class="form-group">
+          <label for="binding_option">Binding Option (if applicable):</label>
+          <select name="binding_option" id="binding_option">
+            <option value="spiral">Spiral Binding</option>
+            <option value="perfect">Perfect Binding</option>
+          </select>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label for="file_upload">Upload File (PDF/JPG):</label>
+          <input
+            type="file"
+            name="file_upload"
+            id="file_upload"
+            accept=".pdf, .jpg, .jpeg"
+            required
+          />
+        </div>
+
+        <!-- Submit Button -->
+         <div id="Number_pages"></div>
+        <button type="submit">Submit Order</button>
+      </form>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+      <p>We appreciate your business!</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
+    <script>
+      document
+        .getElementById("orderForm")
+        .addEventListener("submit", function (event) {
+          // Get the value from the time input
+          var timeInput = document.getElementById("orderTime").value;
+
+          // Convert time input to hours and minutes
+          var timeParts = timeInput.split(":");
+          var hours = parseInt(timeParts[0]);
+          var minutes = parseInt(timeParts[1]);
+
+          // Set the time constraints (9:00 AM and 4:20 PM)
+          var isBeforeOpeningTime = hours < 9;
+          var isAfterClosingTime = hours > 16 || (hours === 16 && minutes > 20);
+
+          // Display warning if the selected time is outside the allowed range
+          if (isBeforeOpeningTime || isAfterClosingTime) {
+            alert("Please select a time between 9:00 AM and 4:20 PM.");
+            event.preventDefault(); // Prevent the form from submitting
+          }
+        });
+
+      let pdf = document.getElementById("file_upload");
+      pdf.onchange = function (event) {
+        var file = event.target.files[0];
+        console.log(file);
+        var filereader = new FileReader();
+
+        filereader.onload = function () {
+          var typedarray = new Uint8Array(this.result);
+          const task = pdfjsLib.getDocument(typedarray);
+
+          task.promise.then((pdf) => {
+            console.log(pdf.numPages);
+            // document.getElementById("Number_pages").innerHTML=`Cost : ${2}x${pdf.numPages}=${2*pdf.numPages}`
+
+
+          });
+        };
+
+        filereader.readAsArrayBuffer(file);
+      };
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 let mongoose = require('mongoose');
 
 // mongoose.connect(`mongodb+srv://nikhil:123@backendlearning.f16cp.mongodb.net/`);
-mongoose.connect(`mongodb://localhost:27017/printWithUs`); 
+// mongoose.connect(`mongodb://localhost:27017/printWithUs`); 
 
 const userschema = mongoose.Schema({
     email: String,
@@ -10,4 +10,4 @@ const userschema = mongoose.Schema({
 
 });
 
-module.exports = mongoose.model('customer', userschema);
+module.exports = mongoose.model('shopkeeper', userschema);

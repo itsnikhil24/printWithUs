@@ -7,7 +7,12 @@ const userschema = mongoose.Schema({
     email: String,
     username:String,
     password: String,
+    printing_file:[ {type:mongoose.Schema.Types.ObjectId,
+        ref:"ordermodel"
+    }],
+    
+    
 
 });
 
-module.exports = mongoose.model('shopkeeper', userschema);
+module.exports = mongoose.model('customer', userschema);
