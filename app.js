@@ -10,23 +10,57 @@ const customer = require('./models/customer.js');
 const pdf = require('pdf-page-counter');
 const multer = require('multer');
 const Order = require('./models/ordermodel.js');
+const uploads= multer({ dest: 'uploads/' })
+const  GridFsStorage  = require("multer-gridfs-storage");
+const Grid=require('gridfs-stream')
+const mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+const MongoClient = require("mongodb").MongoClient;
+const GridFSBucket = require("mongodb").GridFSBucket;
+const { Readable } = require('stream');
+
+// mongoose.connect('mongodb://localhost:27017/printWithUs', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+//   });
+
+//   const conn = mongoose.connection;
+// conn.on('error', console.error.bind(console, 'Connection error:'));
+// conn.once('open', () => {
+//   console.log('MongoDB connected');
+// });
+
+
+
+
+
+
+
 
 app.set("view engine", "ejs");
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieparser()); // Add this to parse cookies in requests
 
+const mongoURI=`mongodb://localhost:27017/printWithUs`;
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Directory to save uploaded files
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Save file with timestamp
-    }
-});
-const upload = multer({ storage: storage });
+MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    db = client.db("printWithUs");
+    bucket = new GridFSBucket(db, { bucketName: 'uploads' });
+    console.log(`Connected to database: ${"printWithUs"}`);
+  })
+  .catch(err => console.error(err));
+
+  const storage = multer.memoryStorage();
+const upload = multer({ storage });
+  
+
+
+
 
 
 
@@ -84,42 +118,113 @@ app.get('/home',isloggedIn,function (req,res) {
 app.get('/index',function (req,res) {
     res.render("index.ejs");
 })
-app.get('/order',function (req,res) {
-    res.render("order.ejs");
-})
+app.get('/order', (req, res) => {
+  res.render('order', { filename: null, pdfname: null }); // Initial rendering with no file uploaded
+});
 
-app.post("/createorder",async function(req,res){
-    //  upload.single('pdf'),
-     try {
-        let user=await usermodel.findOne({email:req.body.email})
-        console.log(user);
+app.post('/upload', upload.single('file_upload'), (req, res) => {
+    const readableFileStream = new Readable();
+    readableFileStream.push(req.file.buffer);
+    readableFileStream.push(null);
+
+    const uploadStream = bucket.openUploadStream(req.file.originalname, {
+        contentType: req.file.mimetype // Set contentType based on the file's MIME type
+    });
+
+    readableFileStream.pipe(uploadStream)
+      .on('error', (err) => {
+        console.error(err);
+        res.status(500).json({ message: 'Error uploading file' });
+      })
+      .on('finish', () => {
+        // Make sure to pass both pdfname and filename
+        res.render("order.ejs", {
+          pdfname: uploadStream.id || null,  // GridFS file ID or null
+          filename: req.file ? req.file.originalname : null // File name or null
+        });
+      });
+});
+
+
+
+  app.post('/createorder', async (req, res) => {
+    try {
+        // Find the user by email
+        let user = await usermodel.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(404).send({ message: "User not found. Enter the same email as of login" });
+        }
+
+        // Get file information from the form (hidden fields)
+        const pdfFileId = req.body.pdfname;
+        const filename = req.body.filename;
+        console.log(pdfFileId);
+
+        if (!pdfFileId) {
+            return res.status(400).send({ message: "No file uploaded" });
+        }
+
         // Create a new order after the PDF is uploaded
         const order = await Order.create({
-            Name: req.body.Name,
-            Contact_Number:req.body.Contact_Number,
-            Email: req.body.Email,
-            Preferred_Time_Slot:req.body.Preferred_Time_Slot,
-            Select_Service:req.body.Select_Service,
-            Number_of_Copies:req.body.Select_Service,
-            Paper_Size:req.body.Paper_Size,
-            user:user._id
+            Name: req.body.name,
+            Contact_Number: req.body.contact,
+            Email: req.body.email,
+            Preferred_Time_Slot: req.body.orderTime,
+            Select_Service: req.body.service,
+            Number_of_Copies: req.body.copies,
+            Paper_Size: req.body.paper_size,
+            file: {
+                _id: pdfFileId, // File ID from GridFS
+                filename: filename, 
+                contentType: 'application/pdf' // Assuming PDF file
+            },
+            user: user._id
         });
+
+        // Add the order ID to the user's printing_file array
         user.printing_file.push(order._id);
+        await user.save();  // Save user after updating
 
-        await order.save();              // Save the order in the database
-        // res.redirect("Home");
-
-        res.status(201).send({
-            message: 'Order created successfully',
-            order: order
-        });
+        // Respond with order details
+        res.status(201).render("prevrecord.ejs", { orderdetail: order ,pdfFileId:pdfFileId});
     } catch (err) {
+        console.error(err);
         res.status(400).send({ error: err.message });
     }
-    
-})
+});
+
+
+// app.get("/file/:pdfFileId", async (req, res) => {
+//     try {
+//         const fileId = req.params.pdfFileId;
+        
+//         // Assuming you are using `gfs` as a GridFS instance
+//         const file = await gfs.files.findOne({ _id: new mongoose.Types.ObjectId(fileId) });
+
+//         if (!file) {
+//             return res.status(404).send("File not found");
+//         }
+
+//         // Check if the file is a PDF (or any specific type)
+//         if (file.contentType === 'application/pdf') {
+//             // Create a read stream from GridFS and pipe it to the response
+//             const readstream = gfs.createReadStream({ _id: file._id });
+//             res.set('Content-Type', 'application/pdf');
+//             return readstream.pipe(res);
+//         } else {
+//             return res.status(400).send("Not a PDF file");
+//         }
+
+//     } catch (err) {
+//         return res.status(500).send({ error: err.message });
+//     }
+// });
+
+
+
+
 function isloggedIn(req, res, next) {
-    const token = req.cookies.token; // changed from 'Token' to 'token'
+    const token = req.cookies.token; 
     if (!token || token === "") {
         return res.redirect("/login");
     }
