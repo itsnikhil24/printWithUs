@@ -70,6 +70,9 @@ const upload = multer({ storage });
 app.get('/login',function (req,res) {
     res.render("login.ejs");
 })
+app.get('/',function (req,res) {
+    res.render("select_role.ejs");
+})
 app.post('/register',async function (req,res) {
     let user=await usermodel.findOne({email:req.body.email});
     if(user){res.status(404).send("User Already exsist")}
