@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/bba7e14e-212a-41a7-947c-698c18c291ec/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/print-with-us",
+    "appService.deploySubpath": "."
+}
