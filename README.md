@@ -19,7 +19,7 @@ Step 5: Open any browser and write Local : http://localhost:3000
 
 - username: shopkeeper1
 - email:shopkeeper@gmail.com
-password: 12345678
+- password: 12345678
 
 
 
