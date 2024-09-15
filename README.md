@@ -11,9 +11,15 @@ Step 4: Open the terminal in printWithUs directory and run the server using comm
 Step 5: Open any browser and write Local : http://localhost:3000
 
 ## Card Details for payment 
-- cardNumber 1234 5678 9012 3456 
+- cardNumber:1234 5678 9012 3456 
+- expire date : 12
+- cvv: 123
 
-- cvv ===  123
+## Shopkeeper Login Detail
+
+- username: shopkeeper1
+- email:shopkeeper@gmail.com
+password: 12345678
 
 
 
