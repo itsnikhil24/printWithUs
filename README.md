@@ -1,3 +1,23 @@
+## To execute this application follow the mentioned steps below :
+
+Step 1: Git clone this repository using  this command : git clone https://github.com/itsnikhil24/printWithUs.git
+
+Step 2: Install all the packages needed for the application using : npm install
+
+Step 3: Make sure that you are in the directory *printWithUs*
+
+Step 4: Open the terminal in printWithUs directory and run the server using command: node app.js
+
+Step 5: Open any browser and write Local : http://localhost:3000
+
+## Card Details for payment 
+- cardNumber 1234 5678 9012 3456 
+
+- cvv ===  123
+
+
+
+
 
 # 🥁Introduction
 
@@ -7,12 +27,9 @@ PrintWithUs is a web application designed to streamline the process of placing a
 ## 💡Inspiration:
 
 
-
 -  The frequent hassle students face when getting documents printed at college shops.
 -  Long queues and miscommunication between customers and shopkeepers.
 -  Delays and confusion over order details often lead to frustration on both sides.
--  Students often miss their classes due to delays in the printing process.
--  The need for a simple, digital platform to streamline the process for both users and shopkeepers.
 -  Aiming to save time and reduce unnecessary hassle by digitizing the printing order workflow.
   
 ## 💬 What it does:
@@ -28,36 +45,7 @@ PrintWithUs is a web application designed to streamline the process of placing a
 We built the application using EJS for rendering dynamic HTML, CSS for styling, and JavaScript for client-side functionality. The server-side operations were handled by Node.js and Express, while MongoDB was used for database management.
 
 
-
 ## ❗Challenges we ran into:
 
 -  Uploading PDFs to MongoDB: Configuring GridFS to handle and store PDF files effectively.
 -  Reflecting Files from OrderModel to ShopkeeperModel: Ensuring that files in the OrderModel were correctly referenced and accessible in the ShopkeeperModel.
-
-
-
-## ❓ What's next for Feedback Prime
-
--  Enhanced User Interface: Refining the design and user experience for improved usability.
--  Advanced Payment Integration: Adding more payment options and security features.
--  Order Tracking: Implementing real-time tracking to monitor the status of print requests.
-
-## To execute this application follow the mentioned steps below :
-
-Step 1: Git clone this repository using  this command :
-        git clone https://github.com/itsnikhil24/printWithUs.git
-
-step 2:    Install all the packages needed for the application using :
-           npm install
-
-step 3: Make sure that you are in the directory printWithUs 
-
-step 4: Start the server using command :
-         npx nodemon app.js
-
-step 5: Open any browser and write Local : 
-        http://localhost:3000
-
-
-          
-     
