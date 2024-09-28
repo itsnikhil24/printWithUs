@@ -68,7 +68,7 @@ app.get('/login', function (req, res) {
     res.render("login.ejs");
 })
 app.get('/', function (req, res) {
-    res.render("select_role.ejs");
+    res.render("select_temp_role.ejs");
 })
 app.post('/register', async function (req, res) {
     let user = await usermodel.findOne({ email: req.body.email });
@@ -348,7 +348,7 @@ app.get('/order/:id', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
 
-module.exports = app;
+module.exports = app;
