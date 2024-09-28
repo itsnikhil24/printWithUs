@@ -2,14 +2,11 @@ const express = require('express');
 const app = express();
 const path = require("path");
 const fs = require('fs');
-const usermodel = require('./models/customer.js')
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const cookieparser = require('cookie-parser');
-const customer = require('./models/customer.js');
 const pdf = require('pdf-page-counter');
 const multer = require('multer');
-const Order = require('./models/ordermodel.js');
 const uploads = multer({ dest: 'uploads/' })
 const GridFsStorage = require("multer-gridfs-storage");
 const Grid = require('gridfs-stream')
@@ -18,9 +15,9 @@ var bodyParser = require('body-parser');
 const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
 const { Readable } = require('stream');
+const usermodel = require('./models/customer.js');
 const Shopkeeper = require("./models/shopkeeper.js");
-const shopkeeper = require('./models/shopkeeper.js');
-const ordermodel = require('./models/ordermodel.js');
+const Order = require('./models/ordermodel.js');
 
 // mongoose.connect('mongodb://localhost:27017/printWithUs', {
 //     useNewUrlParser: true,
