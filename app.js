@@ -18,6 +18,9 @@ const { Readable } = require('stream');
 const usermodel = require('./models/customer.js');
 const Shopkeeper = require("./models/shopkeeper.js");
 const Order = require('./models/ordermodel.js');
+require('dotenv').config();
+const mongoURI = process.env.MONGO_URI;
+
 
 // mongoose.connect('mongodb://localhost:27017/printWithUs', {
 //     useNewUrlParser: true,
@@ -45,7 +48,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieparser()); // Add this to parse cookies in requests
 
-const mongoURI = `mongodb+srv://nikhilsharma24:oz9KthwlB5ahQg2N@cluster0.txzrq.mongodb.net/`;
+// const mongoURI = `mongodb+srv://nikhilsharma24:oz9KthwlB5ahQg2N@cluster0.txzrq.mongodb.net/`;
 
 MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
